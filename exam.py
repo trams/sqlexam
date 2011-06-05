@@ -2,6 +2,49 @@
 
 import sqlite3
 
+def load_data():
+  def add_line(string):
+    if string is None:
+      return ""
+    else:
+      return string + "\n"
+
+  data = {}
+  id = None
+  desc = None
+  solution = None
+
+  id_state, desc_state, sol_state = range(3)
+
+  f = open("tasks.dat", 'r');
+  state = id_state
+  for line in f:
+    clean_line = line.strip(" \n")
+
+    if state == id_state:
+      id = clean_line
+      state = desc_state
+    elif state == desc_state:
+      if clean_line == "":
+        state = sol_state
+      else:
+        desc = add_line(desc)
+        desc += clean_line
+    elif state == sol_state:
+      if clean_line == "":
+        data[id] = (desc, solution)
+        id = None
+        desc = None
+        solution = None
+        state = id_state
+      else:
+        solution = add_line(solution)
+        solution += clean_line
+    else:
+      pass
+
+  return data
+
 def is_equal(user_result, good_result):
   return frozenset(user_result) == frozenset(good_result)
 
